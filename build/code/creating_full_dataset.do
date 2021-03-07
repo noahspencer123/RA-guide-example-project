@@ -28,13 +28,21 @@ merge m:1 city using "$build/temp/normalized_raw_city_data.dta", nogen
 
 *==============================================================================
 *==============================================================================
-* Generate treatment variable
+* Cleaning
 *==============================================================================
 *==============================================================================
 
-gen treatment = "TRUE" if lawchange == "TRUE" & year >= 2007
-replace treatment = "FALSE" if lawchange != "TRUE" | year < 2007
+** Generate treatment variable
+gen treatment = 1 if lawchange == "TRUE" & year >= 2007
+replace treatment = 0 if lawchange != "TRUE" | year < 2007
 label var treatment "An indicator for whether the city was in a state that was eligible to receive subsidies for opening Pokeball factories"
+label define treatment 1 "Treatment" 0 "No Treatment"
+label values treatment treatment
+
+** Encode city 
+encode city, gen(city_encoded)
+drop city
+rename city_encoded city
 
 
 *==============================================================================
@@ -44,3 +52,4 @@ label var treatment "An indicator for whether the city was in a state that was e
 *==============================================================================
 
 save "/Users/Noah/Library/Mobile Documents/com~apple~CloudDocs/PhD prep/RA-guide-example-project/build/output/full_dataset.dta", replace
+save "/Users/Noah/Library/Mobile Documents/com~apple~CloudDocs/PhD prep/RA-guide-example-project/analysis/input/full_dataset.dta", replace
